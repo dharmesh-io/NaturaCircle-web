@@ -21,7 +21,7 @@ export const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
           <h4 className="font-medium leading-tight">{product.name}</h4>
           <span className="font-semibold">${product.price.toFixed(2)}</span>
         </div>
-        <p className="line-clamp-2 text-sm text-muted-foreground">{product.description}</p>
+        <p className="text-sm text-muted-foreground">{product.description}</p>
         <div className="flex items-center gap-1 text-amber-500">
           {Array.from({ length: 5 }).map((_, i) => (
             <Star key={i} className={`h-4 w-4 ${i < product.rating ? "fill-current" : "opacity-30"}`} />
