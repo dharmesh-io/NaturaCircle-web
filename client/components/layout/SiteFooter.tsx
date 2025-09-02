@@ -34,6 +34,7 @@ export const SiteFooter: React.FC = () => {
             <li><a href="/about">About us</a></li>
             <li><a href="/blog">Blog</a></li>
             <li><a href="/contact">Contact</a></li>
+            <li><a href="https://instagram.com/naturacircle" target="_blank" rel="noreferrer">Instagram @naturacircle</a></li>
           </ul>
         </div>
         <div>
