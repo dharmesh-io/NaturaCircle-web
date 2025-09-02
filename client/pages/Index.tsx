@@ -40,28 +40,28 @@ export default function Index() {
       </section>
 
       {/* Sustainability banners */}
-      <section className="container -mt-10 grid gap-4 md:grid-cols-3">
-        <div className="flex items-center gap-3 rounded-xl border bg-card p-4 shadow-sm">
+      <section className="container relative z-10 -mt-10 grid gap-4 md:grid-cols-3">
+        <a href="/shop#Bamboo%20Toothbrushes" className="group flex items-center gap-3 rounded-xl border bg-card p-4 shadow-sm outline-none transition hover:-translate-y-0.5 hover:shadow-md focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2" aria-label="Browse plant-based materials">
           <Leaf className="h-6 w-6 text-primary" />
           <div>
             <p className="font-semibold">Plant-based Materials</p>
             <p className="text-sm text-muted-foreground">Bamboo, jute, and organic fibers</p>
           </div>
-        </div>
-        <div className="flex items-center gap-3 rounded-xl border bg-card p-4 shadow-sm">
+        </a>
+        <a href="/shop" className="group flex items-center gap-3 rounded-xl border bg-card p-4 shadow-sm outline-none transition hover:-translate-y-0.5 hover:shadow-md focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2" aria-label="Shop plastic-free packaging products">
           <Recycle className="h-6 w-6 text-primary" />
           <div>
             <p className="font-semibold">Plastic-free Packaging</p>
             <p className="text-sm text-muted-foreground">100% recyclable & compostable</p>
           </div>
-        </div>
-        <div className="flex items-center gap-3 rounded-xl border bg-card p-4 shadow-sm">
+        </a>
+        <a href="/shop#Organic%20Skincare" className="group flex items-center gap-3 rounded-xl border bg-card p-4 shadow-sm outline-none transition hover:-translate-y-0.5 hover:shadow-md focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2" aria-label="Browse low water footprint products">
           <Droplets className="h-6 w-6 text-primary" />
           <div>
             <p className="font-semibold">Low Water Footprint</p>
             <p className="text-sm text-muted-foreground">Sustainably produced</p>
           </div>
-        </div>
+        </a>
       </section>
 
       {/* Featured products */}
