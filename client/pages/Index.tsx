@@ -1,62 +1,108 @@
-import { DemoResponse } from "@shared/api";
 import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Leaf, Recycle, Droplets, Sprout } from "lucide-react";
+import { PRODUCTS } from "@/data/products";
+import { ProductCard } from "@/components/shop/ProductCard";
+import { NewsletterModal } from "@/components/common/NewsletterModal";
 
 export default function Index() {
-  const [exampleFromServer, setExampleFromServer] = useState("");
-  // Fetch users on component mount
-  useEffect(() => {
-    fetchDemo();
-  }, []);
-
-  // Example of how to fetch data from the server (if needed)
-  const fetchDemo = async () => {
-    try {
-      const response = await fetch("/api/demo");
-      const data = (await response.json()) as DemoResponse;
-      setExampleFromServer(data.message);
-    } catch (error) {
-      console.error("Error fetching hello:", error);
-    }
-  };
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200">
-      <div className="text-center">
-        {/* TODO: FUSION_GENERATION_APP_PLACEHOLDER replace everything here with the actual app! */}
-        <h1 className="text-2xl font-semibold text-slate-800 flex items-center justify-center gap-3">
-          <svg
-            className="animate-spin h-8 w-8 text-slate-400"
-            viewBox="0 0 50 50"
-          >
-            <circle
-              className="opacity-30"
-              cx="25"
-              cy="25"
-              r="20"
-              stroke="currentColor"
-              strokeWidth="5"
-              fill="none"
-            />
-            <circle
-              className="text-slate-600"
-              cx="25"
-              cy="25"
-              r="20"
-              stroke="currentColor"
-              strokeWidth="5"
-              fill="none"
-              strokeDasharray="100"
-              strokeDashoffset="75"
-            />
-          </svg>
-          Generating your app...
-        </h1>
-        <p className="mt-4 text-slate-600 max-w-md">
-          Watch the chat on the left for updates that might need your attention
-          to finish generating
-        </p>
-        <p className="mt-4 hidden max-w-md">{exampleFromServer}</p>
-      </div>
+    <div>
+      {/* Hero */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-secondary to-accent/40">
+        <div className="container grid items-center gap-10 py-16 md:grid-cols-2 md:py-24">
+          <div>
+            <span className="inline-flex items-center gap-2 rounded-full border bg-background px-3 py-1 text-xs font-medium">
+              <Sprout className="h-3.5 w-3.5 text-primary" /> 100% Eco-Certified
+            </span>
+            <h1 className="mt-4 text-4xl font-extrabold tracking-tight md:text-5xl">
+              Eco-friendly Living, Made Easy
+            </h1>
+            <p className="mt-3 max-w-prose text-muted-foreground">
+              Thoughtfully designed essentials for a greener lifestyle. Reusable, recyclable, and responsibly sourced.
+            </p>
+            <div className="mt-6 flex flex-wrap items-center gap-3">
+              <Button asChild>
+                <a href="/shop">Shop Now</a>
+              </Button>
+              <span className="text-sm text-muted-foreground">Free delivery on your first order</span>
+            </div>
+          </div>
+          <div className="relative">
+            <div className="aspect-square w-full rounded-3xl bg-[url('https://images.unsplash.com/photo-1501004318641-b39e6451bec6?q=80&w=1200&auto=format&fit=crop')] bg-cover bg-center shadow-xl" />
+            <div className="absolute -left-6 -top-6 rounded-full bg-primary/10 p-10 blur-2xl" />
+            <div className="absolute -right-6 -bottom-6 rounded-full bg-primary/10 p-10 blur-2xl" />
+          </div>
+        </div>
+      </section>
+
+      {/* Sustainability banners */}
+      <section className="container -mt-10 grid gap-4 md:grid-cols-3">
+        <div className="flex items-center gap-3 rounded-xl border bg-card p-4 shadow-sm">
+          <Leaf className="h-6 w-6 text-primary" />
+          <div>
+            <p className="font-semibold">Plant-based Materials</p>
+            <p className="text-sm text-muted-foreground">Bamboo, jute, and organic fibers</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-3 rounded-xl border bg-card p-4 shadow-sm">
+          <Recycle className="h-6 w-6 text-primary" />
+          <div>
+            <p className="font-semibold">Plastic-free Packaging</p>
+            <p className="text-sm text-muted-foreground">100% recyclable & compostable</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-3 rounded-xl border bg-card p-4 shadow-sm">
+          <Droplets className="h-6 w-6 text-primary" />
+          <div>
+            <p className="font-semibold">Low Water Footprint</p>
+            <p className="text-sm text-muted-foreground">Sustainably produced</p>
+          </div>
+        </div>
+      </section>
+
+      {/* Featured products */}
+      <section className="container py-16">
+        <div className="mb-6 flex items-end justify-between">
+          <div>
+            <h2 className="text-2xl font-bold">Featured Products</h2>
+            <p className="text-sm text-muted-foreground">Curated best-sellers loved by our community</p>
+          </div>
+          <a href="/shop" className="text-sm text-primary underline underline-offset-4">View all</a>
+        </div>
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {PRODUCTS.map((p) => (
+            <ProductCard key={p.id} product={p} />
+          ))}
+        </div>
+      </section>
+
+      {/* Testimonials */}
+      <section className="bg-muted/30 py-16">
+        <div className="container">
+          <h3 className="text-center text-2xl font-bold">What our customers say</h3>
+          <div className="mt-8 grid gap-6 md:grid-cols-3">
+            <blockquote className="rounded-xl border bg-card p-6 shadow-sm">
+              <p>“Beautiful, thoughtfully made products. I love the jute bag!”</p>
+              <footer className="mt-3 text-sm text-muted-foreground">— Priya S.</footer>
+            </blockquote>
+            <blockquote className="rounded-xl border bg-card p-6 shadow-sm">
+              <p>“My bottle keeps water cold all day. Zero plastic guilt.”</p>
+              <footer className="mt-3 text-sm text-muted-foreground">— Daniel R.</footer>
+            </blockquote>
+            <blockquote className="rounded-xl border bg-card p-6 shadow-sm">
+              <p>“The bamboo toothbrush is a game-changer. Will reorder.”</p>
+              <footer className="mt-3 text-sm text-muted-foreground">— Aisha K.</footer>
+            </blockquote>
+          </div>
+        </div>
+      </section>
+
+      {/* Newsletter modal */}
+      {mounted && <NewsletterModal />}
     </div>
   );
 }
