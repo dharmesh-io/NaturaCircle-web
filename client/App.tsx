@@ -46,8 +46,8 @@ const App = () => (
               <Route path="/" element={<Index />} />
               <Route path="/shop" element={<Shop />} />
               <Route path="/about" element={<Placeholder title="About NaturaCircle" />} />
-              <Route path="/blog" element={<Placeholder title="NaturaCircle Blog" />} />
-              <Route path="/contact" element={<Placeholder title="Contact Us" />} />
+              <Route path="/blog" element={<Blog />} />
+              <Route path="/contact" element={<Contact />} />
               <Route path="/cart" element={<Placeholder title="Your Cart" />} />
               <Route path="/checkout" element={<Placeholder title="Checkout" />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
