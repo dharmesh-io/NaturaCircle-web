@@ -19,7 +19,7 @@ export const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
       <div className="space-y-2 p-4">
         <div className="flex items-start justify-between gap-2">
           <h4 className="font-medium leading-tight">{product.name}</h4>
-          <span className="font-semibold">${product.price.toFixed(2)}</span>
+          <span className="font-semibold">₹{product.price.toFixed(2)}</span>
         </div>
         <p className="text-sm text-muted-foreground">{product.description}</p>
         <div className="flex items-center gap-1 text-amber-500">
