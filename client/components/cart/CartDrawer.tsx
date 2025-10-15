@@ -56,7 +56,7 @@ export const CartDrawer: React.FC<Props> = ({ open, onClose }) => {
         <div className="border-t p-4 space-y-3">
           <div className="flex items-center justify-between font-semibold">
             <span>Total</span>
-            <span>${total.toFixed(2)}</span>
+            <span>₹{total.toFixed(2)}</span>
           </div>
           <div className="flex gap-2">
             <Button className="flex-1" onClick={onClose} asChild>
