@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { MessageCircle, X, Send } from "lucide-react";
+import { useCart } from "@/components/cart/CartContext";
+import { PRODUCTS } from "@/data/products";
 
 type Message = { from: "bot" | "user"; text: string };
 
@@ -15,109 +17,189 @@ const MAIN_MENU = [
   "Order Help",
   "Shipping Info",
   "Sustainability Tips",
-  "Contact Support",
+  "Customer Support",
 ];
 
-const BROWSE_CATEGORIES = [
-  "Paan & Accessories",
-  "Eco-Friendly Home",
-  "Personal Care",
-  "Snacks & Drinks",
+const CATEGORIES = [
+  "Oral Care",
+  "Reusable Bottles & Flasks",
+  "Bags & Storage",
+  "Skincare & Haircare",
 ];
 
-function intentReply(payload: string): { reply: string; options?: string[]; links?: { label: string; href: string }[] } {
-  const p = payload.toLowerCase();
-  switch (p) {
-    case "browse products":
-      return { reply: "Great! What type of products are you interested in?", options: BROWSE_CATEGORIES };
-    case "paan & accessories":
-      return {
-        reply: "We have traditional & flavored paan, biodegradable wraps, and more! Would you like to see our menu or bestsellers?",
-        options: ["View Menu", "Bestsellers", "Return to Main Menu"],
-      };
-    case "view menu":
-    case "bestsellers":
-      return { reply: "Opening our shop...", links: [{ label: "Open Shop", href: "/shop" }] };
-    case "order help":
-      return {
-        reply: "You can order online or via WhatsApp. Would you like the link or our WhatsApp number?",
-        options: ["Online Order Link", "WhatsApp Number", "Return to Main Menu"],
-      };
-    case "online order link":
-      return { reply: "Here’s the online order page:", links: [{ label: "Order Online", href: "/shop" }] };
-    case "whatsapp number":
-      return { reply: `Chat with us on WhatsApp: ${CONTACT.whatsapp}`, links: [{ label: "Open WhatsApp", href: CONTACT.whatsapp }] };
-    case "shipping info":
-      return {
-        reply: "We offer eco-friendly packaging and delivery within Ahmedabad. Shipping charges apply for orders below ₹500.",
-        options: ["More Details", "Return to Main Menu"],
-      };
-    case "more details":
-      return { reply: "Local delivery: 1-2 days. Standard: 3-7 days. Free delivery for orders above ₹500." };
-    case "sustainability tips":
-      return {
-        reply: "Here’s a quick tip: Switch to reusable beeswax wraps instead of plastic wrap! Want more tips or product suggestions?",
-        options: ["More Tips", "Product Suggestions", "Return to Main Menu"],
-      };
-    case "more tips":
-      return { reply: "Try swapping single-use items for reusable alternatives: beeswax wraps, refillable bottles, and jute bags." };
-    case "product suggestions":
-      return {
-        reply: "Based on your interest, I recommend: Bamboo Toothbrush - Soft Bristles, Jute Tote Bag, Stainless Reusable Bottle 750ml. Would you like to add any to cart?",
-        options: ["Add to Cart", "More Suggestions", "Return to Main Menu"],
-      };
-    case "add to cart":
-      return { reply: "I can’t add items directly here, but you can add them from the product page. Open the Shop to add items.", links: [{ label: "Open Shop", href: "/shop" }] };
-    case "proceed to checkout":
-      return { reply: "Proceed to checkout here:", links: [{ label: "Checkout", href: "/checkout" }] };
-    case "payment info":
-      return { reply: "We accept major credit/debit cards and digital wallets like Paytm and Google Pay." };
-    case "contact support":
-      return { reply: `You can reach us at ${CONTACT.phone} or ${CONTACT.email}. Would you like me to open the Contact page?`, options: ["Open Contact Page", "Return to Main Menu"], links: [{ label: "Contact Page", href: CONTACT.contactPage }] };
-    case "open contact page":
-      return { reply: "Opening contact page...", links: [{ label: "Contact", href: CONTACT.contactPage }] };
-    case "thank you":
-    case "end chat":
-      return { reply: "Thanks for visiting Natura Circle! If you need any help, just type here. Have a great day! 🌿" };
-    default:
-      return {
-        reply: "Sorry, I didn’t quite get that. Can I help you browse products, answer questions, or connect you with support?",
-        options: ["Browse Products", "Order Help", "Contact Support"],
-      };
-  }
+function findProductByName(name: string) {
+  return PRODUCTS.find((p) => p.name.toLowerCase() === name.toLowerCase());
 }
 
 export const ChatbotWidget: React.FC = () => {
+  const { add } = useCart();
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<Message[]>([
     { from: "bot", text: "Hi there! 🌿 Welcome to Natura Circle — your eco-friendly store. How can I assist you today?" },
   ]);
+  const [lastSuggestions, setLastSuggestions] = useState<string[] | null>(null);
   const listRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    if (open) {
-      setTimeout(() => {
-        listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: "smooth" });
-      }, 50);
-    }
+    if (open) setTimeout(() => listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: "smooth" }), 50);
   }, [open, messages.length]);
 
   const pushBot = (text: string) => setMessages((m) => [...m, { from: "bot", text }]);
   const pushUser = (text: string) => setMessages((m) => [...m, { from: "user", text }]);
 
+  const handleAddToCart = (productName?: string) => {
+    const name = productName || (lastSuggestions && lastSuggestions.length === 1 ? lastSuggestions[0] : undefined);
+    if (!name) {
+      pushBot("Which product would you like to add? Please type the product name or choose from the suggestions.");
+      return;
+    }
+    const product = findProductByName(name);
+    if (!product) {
+      pushBot("Sorry, I couldn't find that product. Try opening the Shop to add items.");
+      pushBot("Open Shop: /shop");
+      return;
+    }
+    add(product, 1);
+    pushBot(`${product.name} added to your cart! Would you like to keep shopping or proceed to checkout?`);
+    pushBot("Options: Continue Shopping | Proceed to Checkout");
+  };
+
   const handleIntent = (payload: string) => {
-    pushUser(payload);
-    const res = intentReply(payload);
-    setTimeout(() => {
-      if (res.reply) pushBot(res.reply);
-      if (res.links) {
-        res.links.forEach((l) => pushBot(`${l.label}: ${l.href}`));
-      }
-      if (res.options) {
-        setTimeout(() => pushBot(`Options: ${res.options.join(" | ")}`), 100);
-      }
-    }, 300);
+    const p = payload.trim();
+    pushUser(p);
+
+    // direct product name match
+    const prod = findProductByName(p);
+    if (prod) {
+      setTimeout(() => {
+        pushBot(`We found ${prod.name}. Would you like to add it to your cart or view details?`);
+        pushBot("Options: Add to Cart | View Details | Return to Categories");
+        setLastSuggestions([prod.name]);
+      }, 300);
+      return;
+    }
+
+    switch (p.toLowerCase()) {
+      case "browse products":
+        setTimeout(() => pushBot("Awesome! Which category are you interested in?"), 300);
+        setTimeout(() => pushBot(`Options: ${CATEGORIES.join(" | ")}`), 400);
+        setLastSuggestions(null);
+        break;
+
+      case "oral care":
+        setTimeout(() => pushBot("We offer Bamboo Toothbrushes with Soft Bristles, Charcoal variant, and Travel Bamboo Toothbrush with Case. Would you like to see more details or add any to your cart?"), 300);
+        setTimeout(() => pushBot("Options: View Details | Add to Cart | Return to Categories"), 400);
+        setLastSuggestions(["Bamboo Toothbrush - Soft Bristles", "Bamboo Toothbrush - Charcoal", "Travel Bamboo Toothbrush + Case"]);
+        break;
+
+      case "reusable bottles & flasks":
+        setTimeout(() => pushBot("Choose from Stainless Reusable Bottle 750ml, Sleek Thermos Flask 600ml, or Minimal Glass Bottle 500ml. Interested in any?"), 300);
+        setTimeout(() => pushBot("Options: View Details | Add to Cart | Return to Categories"), 400);
+        setLastSuggestions(["Stainless Reusable Bottle 750ml", "Sleek Thermos Flask 600ml", "Minimal Glass Bottle 500ml"]);
+        break;
+
+      case "bags & storage":
+        setTimeout(() => pushBot("We have eco-friendly Jute Tote Bag, Jute Lunch Carrier, and Burlap Storage Pouch. Want product info or pricing?"), 300);
+        setTimeout(() => pushBot("Options: View Details | Add to Cart | Return to Categories"), 400);
+        setLastSuggestions(["Jute Tote Bag", "Jute Lunch Carrier", "Burlap Storage Pouch"]);
+        break;
+
+      case "skincare & haircare":
+        setTimeout(() => pushBot("Check out our Organic Aloe Skincare Set, Aloe Vera Gel 200ml, and Solid Shampoo Bar - Herbal. Would you like to explore them?"), 300);
+        setTimeout(() => pushBot("Options: View Details | Add to Cart | Return to Categories"), 400);
+        setLastSuggestions(["Organic Aloe Skincare Set", "Aloe Vera Gel 200ml", "Solid Shampoo Bar - Herbal"]);
+        break;
+
+      case "view details":
+        if (lastSuggestions && lastSuggestions.length > 0) {
+          pushBot(`Open the product page for more details: ${lastSuggestions.map((n) => `${n} -> /shop`).join(' | ')}`);
+          pushBot("Or type the exact product name to add it to your cart.");
+        } else {
+          pushBot("Which product would you like details for? Type the product name or pick a category first.");
+        }
+        break;
+
+      case "add to cart":
+        if (lastSuggestions && lastSuggestions.length === 1) handleAddToCart(lastSuggestions[0]);
+        else if (lastSuggestions && lastSuggestions.length > 1) pushBot(`Which of these would you like to add? ${lastSuggestions.join(' | ')}`);
+        else pushBot("Please tell me the product name or browse categories to add items.");
+        break;
+
+      case "return to categories":
+        pushBot("Returning to categories...");
+        setTimeout(() => pushBot(`Options: ${CATEGORIES.join(" | ")}`), 200);
+        setLastSuggestions(null);
+        break;
+
+      case "order help":
+        pushBot("You can order online or via WhatsApp. Would you like the online shop link or our WhatsApp number?");
+        pushBot("Options: Online Order Link | WhatsApp Number | Return to Main Menu");
+        break;
+
+      case "online order link":
+        pushBot("Here’s the online order page: /shop");
+        break;
+
+      case "whatsapp number":
+        pushBot(`Chat with us on WhatsApp: ${CONTACT.whatsapp}`);
+        break;
+
+      case "shipping info":
+        pushBot("We offer eco-friendly packaging and deliver within Ahmedabad. Shipping fees apply for orders below ₹500.");
+        pushBot("Options: More Details | Return to Main Menu");
+        break;
+
+      case "more details":
+        pushBot("Local delivery: 1-2 days. Standard: 3-7 days. Free delivery for orders above ₹500.");
+        break;
+
+      case "sustainability tips":
+        pushBot("Here’s a tip: Use bamboo toothbrushes to reduce plastic waste! Want more eco tips or product suggestions?");
+        pushBot("Options: More Tips | Product Suggestions | Return to Main Menu");
+        break;
+
+      case "product suggestions":
+        pushBot("Based on your interest, I recommend: Bamboo Toothbrush - Charcoal, Stainless Reusable Bottle 750ml, and Organic Aloe Skincare Set. Want to add any to your cart?");
+        pushBot("Options: Add to Cart | More Suggestions | Return to Main Menu");
+        setLastSuggestions(["Bamboo Toothbrush - Charcoal", "Stainless Reusable Bottle 750ml", "Organic Aloe Skincare Set"]);
+        break;
+
+      case "more suggestions":
+        pushBot("Try: Jute Tote Bag, Minimal Glass Bottle 500ml, Solid Shampoo Bar - Herbal.");
+        setLastSuggestions(["Jute Tote Bag", "Minimal Glass Bottle 500ml", "Solid Shampoo Bar - Herbal"]);
+        break;
+
+      case "proceed to checkout":
+        pushBot("You can complete your purchase here: /checkout");
+        pushBot("Options: Payment Info | Return to Main Menu");
+        break;
+
+      case "payment info":
+        pushBot("We accept all major credit/debit cards and digital wallets like Paytm and Google Pay.");
+        pushBot("Options: Place Order | Return to Main Menu");
+        break;
+
+      case "customer support":
+      case "contact support":
+        pushBot(`Reach us at ${CONTACT.phone} or WhatsApp ${CONTACT.whatsapp}. Would you like me to connect you now?`);
+        pushBot("Options: Connect Now | Return to Main Menu");
+        break;
+
+      case "connect now":
+        pushBot(`Opening contact page: ${CONTACT.contactPage}`);
+        break;
+
+      case "thank you":
+      case "end chat":
+        pushBot("Thanks for visiting Natura Circle! If you need anything else, just ask. Have a great day! 🌿");
+        break;
+
+      default:
+        pushBot("Sorry, I didn’t catch that. Can I help you browse products, answer questions, or connect you with support?");
+        pushBot("Options: Browse Products | Order Help | Contact Support");
+        break;
+    }
   };
 
   const handleSend = (text: string) => {
