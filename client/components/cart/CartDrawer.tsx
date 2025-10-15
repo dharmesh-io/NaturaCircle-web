@@ -40,7 +40,7 @@ export const CartDrawer: React.FC<Props> = ({ open, onClose }) => {
                   <img src={product.image} alt={product.name} className="h-16 w-16 rounded object-cover" />
                   <div className="flex-1">
                     <p className="font-medium">{product.name}</p>
-                    <p className="text-sm text-muted-foreground">${product.price.toFixed(2)}</p>
+                    <p className="text-sm text-muted-foreground">₹{product.price.toFixed(2)}</p>
                     <div className="mt-2 flex items-center gap-2">
                       <Button variant="outline" size="sm" onClick={() => update(product.id, quantity - 1)}>-</Button>
                       <span className="w-8 text-center">{quantity}</span>
