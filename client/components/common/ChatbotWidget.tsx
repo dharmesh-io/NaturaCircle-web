@@ -3,79 +3,131 @@ import { MessageCircle, X, Send } from "lucide-react";
 
 type Message = { from: "bot" | "user"; text: string };
 
-const SUGGESTED = [
-  "Shipping & delivery",
-  "Returns & refunds",
-  "Eco certifications",
-  "Product materials",
-  "Refill & packaging",
-  "Contact support",
-  "Shop bestsellers",
-];
-
 const CONTACT = {
-  email: "hello@naturacircle.example",
-  phone: "+1 (555) 123-4567",
+  email: "hello@naturacircle.com",
+  phone: "+91 00000 00000",
   contactPage: "/contact",
+  whatsapp: "https://wa.me/910000000000",
 };
 
-function getBotReply(input: string): string {
-  const q = input.toLowerCase();
-  if (q.includes("ship") || q.includes("delivery") || q.includes("shipping")) {
-    return "Standard shipping takes 3-7 business days. Free shipping on your first order. Expedited options are available at checkout.";
+const MAIN_MENU = [
+  "Browse Products",
+  "Order Help",
+  "Shipping Info",
+  "Sustainability Tips",
+  "Contact Support",
+];
+
+const BROWSE_CATEGORIES = [
+  "Paan & Accessories",
+  "Eco-Friendly Home",
+  "Personal Care",
+  "Snacks & Drinks",
+];
+
+function intentReply(payload: string): { reply: string; options?: string[]; links?: { label: string; href: string }[] } {
+  const p = payload.toLowerCase();
+  switch (p) {
+    case "browse products":
+      return { reply: "Great! What type of products are you interested in?", options: BROWSE_CATEGORIES };
+    case "paan & accessories":
+      return {
+        reply: "We have traditional & flavored paan, biodegradable wraps, and more! Would you like to see our menu or bestsellers?",
+        options: ["View Menu", "Bestsellers", "Return to Main Menu"],
+      };
+    case "view menu":
+    case "bestsellers":
+      return { reply: "Opening our shop...", links: [{ label: "Open Shop", href: "/shop" }] };
+    case "order help":
+      return {
+        reply: "You can order online or via WhatsApp. Would you like the link or our WhatsApp number?",
+        options: ["Online Order Link", "WhatsApp Number", "Return to Main Menu"],
+      };
+    case "online order link":
+      return { reply: "Here’s the online order page:", links: [{ label: "Order Online", href: "/shop" }] };
+    case "whatsapp number":
+      return { reply: `Chat with us on WhatsApp: ${CONTACT.whatsapp}`, links: [{ label: "Open WhatsApp", href: CONTACT.whatsapp }] };
+    case "shipping info":
+      return {
+        reply: "We offer eco-friendly packaging and delivery within Ahmedabad. Shipping charges apply for orders below ₹500.",
+        options: ["More Details", "Return to Main Menu"],
+      };
+    case "more details":
+      return { reply: "Local delivery: 1-2 days. Standard: 3-7 days. Free delivery for orders above ₹500." };
+    case "sustainability tips":
+      return {
+        reply: "Here’s a quick tip: Switch to reusable beeswax wraps instead of plastic wrap! Want more tips or product suggestions?",
+        options: ["More Tips", "Product Suggestions", "Return to Main Menu"],
+      };
+    case "more tips":
+      return { reply: "Try swapping single-use items for reusable alternatives: beeswax wraps, refillable bottles, and jute bags." };
+    case "product suggestions":
+      return {
+        reply: "Based on your interest, I recommend: Bamboo Toothbrush - Soft Bristles, Jute Tote Bag, Stainless Reusable Bottle 750ml. Would you like to add any to cart?",
+        options: ["Add to Cart", "More Suggestions", "Return to Main Menu"],
+      };
+    case "add to cart":
+      return { reply: "I can’t add items directly here, but you can add them from the product page. Open the Shop to add items.", links: [{ label: "Open Shop", href: "/shop" }] };
+    case "proceed to checkout":
+      return { reply: "Proceed to checkout here:", links: [{ label: "Checkout", href: "/checkout" }] };
+    case "payment info":
+      return { reply: "We accept major credit/debit cards and digital wallets like Paytm and Google Pay." };
+    case "contact support":
+      return { reply: `You can reach us at ${CONTACT.phone} or ${CONTACT.email}. Would you like me to open the Contact page?`, options: ["Open Contact Page", "Return to Main Menu"], links: [{ label: "Contact Page", href: CONTACT.contactPage }] };
+    case "open contact page":
+      return { reply: "Opening contact page...", links: [{ label: "Contact", href: CONTACT.contactPage }] };
+    case "thank you":
+    case "end chat":
+      return { reply: "Thanks for visiting Natura Circle! If you need any help, just type here. Have a great day! 🌿" };
+    default:
+      return {
+        reply: "Sorry, I didn’t quite get that. Can I help you browse products, answer questions, or connect you with support?",
+        options: ["Browse Products", "Order Help", "Contact Support"],
+      };
   }
-  if (q.includes("return") || q.includes("refund")) {
-    return "We accept returns within 30 days of receipt for items in original condition. Visit our Contact page for return authorization and instructions.";
-  }
-  if (q.includes("eco") || q.includes("cert")) {
-    return "Our products meet third-party eco certifications and avoid harmful chemicals, single-use plastics, and excessive packaging. Check each product card for specific certifications.";
-  }
-  if (q.includes("material") || q.includes("what is") || q.includes("made of")) {
-    return "We list materials and care instructions on every product page. If you need more details, tell us the product name or ask us to connect you with the maker.";
-  }
-  if (q.includes("refill") || q.includes("packag")) {
-    return "We prioritize refillable and compostable packaging. Look for the 'refillable' badge on eligible products and sign up for restock notifications for refill kits.";
-  }
-  if (q.includes("contact") || q.includes("support") || q.includes("help")) {
-    return `You can reach us at ${CONTACT.email} or ${CONTACT.phone}. For press or partnerships, use the Contact page.`;
-  }
-  if (q.includes("shop") || q.includes("best") || q.includes("popular")) {
-    return "Browse our Shop for curated essentials. Check product detail pages for materials, care instructions, and impact notes.";
-  }
-  return "I can help with shipping, returns, product materials, eco certifications, refill options, and contact details. Try: 'Shipping', 'Returns', 'Eco certifications', or 'Contact support'.";
 }
 
 export const ChatbotWidget: React.FC = () => {
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<Message[]>([
-    { from: "bot", text: "Hi — I’m the NaturaCircle Assistant. Ask me about shipping, returns, materials, or type 'contact' to get our email and phone." },
+    { from: "bot", text: "Hi there! 🌿 Welcome to Natura Circle — your eco-friendly store. How can I assist you today?" },
   ]);
   const listRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (open) {
-      // small delay so UI finishes opening before scrolling
       setTimeout(() => {
         listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: "smooth" });
       }, 50);
     }
   }, [open, messages.length]);
 
-  const send = (text: string) => {
-    if (!text.trim()) return;
-    const userMsg: Message = { from: "user", text: text.trim() };
-    setMessages((m) => [...m, userMsg]);
-    setInput("");
-    // simulate bot reply
+  const pushBot = (text: string) => setMessages((m) => [...m, { from: "bot", text }]);
+  const pushUser = (text: string) => setMessages((m) => [...m, { from: "user", text }]);
+
+  const handleIntent = (payload: string) => {
+    pushUser(payload);
+    const res = intentReply(payload);
     setTimeout(() => {
-      const reply = getBotReply(text);
-      setMessages((m) => [...m, { from: "bot", text: reply }]);
-    }, 400);
+      if (res.reply) pushBot(res.reply);
+      if (res.links) {
+        res.links.forEach((l) => pushBot(`${l.label}: ${l.href}`));
+      }
+      if (res.options) {
+        setTimeout(() => pushBot(`Options: ${res.options.join(" | ")}`), 100);
+      }
+    }, 300);
+  };
+
+  const handleSend = (text: string) => {
+    if (!text.trim()) return;
+    handleIntent(text.trim());
+    setInput("");
   };
 
   const handleKey = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") send(input);
+    if (e.key === "Enter") handleSend(input);
   };
 
   return (
@@ -102,12 +154,8 @@ export const ChatbotWidget: React.FC = () => {
 
             <div className="p-3">
               <div className="mb-2 flex flex-wrap gap-2">
-                {SUGGESTED.map((s) => (
-                  <button
-                    key={s}
-                    onClick={() => send(s)}
-                    className="rounded-full border px-3 py-1 text-xs hover:bg-muted"
-                  >
+                {MAIN_MENU.map((s) => (
+                  <button key={s} onClick={() => handleIntent(s)} className="rounded-full border px-3 py-1 text-xs hover:bg-muted">
                     {s}
                   </button>
                 ))}
@@ -118,28 +166,25 @@ export const ChatbotWidget: React.FC = () => {
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={handleKey}
-                  placeholder="Ask about shipping, returns, or contact..."
+                  placeholder="Type a question or choose an option..."
                   className="flex-1 rounded-md border px-3 py-2 text-sm"
                 />
-                <button onClick={() => send(input)} aria-label="Send message" className="inline-flex items-center rounded-md bg-primary px-3 text-primary-foreground">
+                <button onClick={() => handleSend(input)} aria-label="Send message" className="inline-flex items-center rounded-md bg-primary px-3 text-primary-foreground">
                   <Send className="h-4 w-4" />
                 </button>
               </div>
 
               <div className="mt-3 text-xs text-muted-foreground">
                 <div>Contact: <a className="text-primary underline" href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a> · <a className="text-primary underline" href={`tel:${CONTACT.phone}`}>{CONTACT.phone}</a></div>
-                <div className="mt-1">For detailed requests or press inquiries, <a className="text-primary underline" href={CONTACT.contactPage}>visit our contact page</a>.</div>
+                <div className="mt-1">WhatsApp: <a className="text-primary underline" href={CONTACT.whatsapp} target="_blank" rel="noreferrer">Chat on WhatsApp</a></div>
+                <div className="mt-1">For press or partnerships, <a className="text-primary underline" href={CONTACT.contactPage}>visit our contact page</a>.</div>
               </div>
             </div>
           </div>
         </div>
       )}
 
-      <button
-        onClick={() => setOpen((o) => !o)}
-        className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition hover:scale-105"
-        aria-label="Open chatbot"
-      >
+      <button onClick={() => setOpen((o) => !o)} className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition hover:scale-105" aria-label="Open chatbot">
         <MessageCircle className="h-6 w-6" />
       </button>
     </div>
