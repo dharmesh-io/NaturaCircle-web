@@ -34,6 +34,11 @@ export default function Contact() {
               <Instagram className="h-5 w-5 text-primary" />
               <a href="https://instagram.com/naturacircle" target="_blank" rel="noreferrer" className="text-sm">@naturacircle</a>
             </div>
+            <div className="mt-4">
+              <a href="https://www.google.com/maps/dir/?api=1&destination=Prahlad+Nagar,+Ahmedabad,+Gujarat+380015,India" target="_blank" rel="noreferrer">
+                <button className="mt-2 inline-flex items-center gap-2 rounded-md bg-primary px-3 py-2 text-sm text-primary-foreground">Get directions</button>
+              </a>
+            </div>
           </div>
 
           <div className="overflow-hidden rounded-xl border">
