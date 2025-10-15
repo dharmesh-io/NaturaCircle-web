@@ -11,6 +11,8 @@ import NotFound from "./pages/NotFound";
 import Shop from "./pages/Shop";
 import Blog from "./pages/Blog";
 import Contact from "./pages/Contact";
+import Privacy from "./pages/Privacy";
+import Terms from "./pages/Terms";
 import About from "./pages/About";
 import { Placeholder } from "./pages/Placeholders";
 import { SiteHeader } from "@/components/layout/SiteHeader";
@@ -48,6 +50,8 @@ const App = () => (
               <Route path="/shop" element={<Shop />} />
               <Route path="/about" element={<About />} />
               <Route path="/blog" element={<Blog />} />
+              <Route path="/privacy" element={<Privacy />} />
+              <Route path="/terms" element={<Terms />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/cart" element={<Placeholder title="Your Cart" />} />
               <Route path="/checkout" element={<Placeholder title="Checkout" />} />
