@@ -40,8 +40,8 @@ export const SiteFooter: React.FC = () => {
         <div>
           <p className="font-semibold mb-3">Legal</p>
           <ul className="space-y-2 text-sm">
-            <li><a href="#">Privacy Policy</a></li>
-            <li><a href="#">Terms of Service</a></li>
+            <li><a href="/privacy">Privacy Policy</a></li>
+            <li><a href="/terms">Terms of Service</a></li>
           </ul>
         </div>
       </div>
