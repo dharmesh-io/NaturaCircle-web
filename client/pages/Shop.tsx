@@ -12,23 +12,34 @@ export default function Shop() {
   );
 
   return (
-    <div className="container py-12">
-      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+    <div className="container px-4 py-8 sm:py-12">
+      <div className="mb-6 sm:mb-8 flex flex-col gap-4">
         <div>
-          <h1 className="text-3xl font-bold">Shop</h1>
-          <p className="text-sm text-muted-foreground">Sustainable essentials for everyday life</p>
+          <h1 className="text-2xl sm:text-3xl font-bold">Shop</h1>
+          <p className="text-xs sm:text-sm text-muted-foreground mt-1">Sustainable essentials for everyday life</p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <Button variant={active === "All" ? "default" : "secondary"} onClick={() => setActive("All")}>All</Button>
+          <Button
+            variant={active === "All" ? "default" : "secondary"}
+            onClick={() => setActive("All")}
+            className="text-xs sm:text-sm py-1.5 sm:py-2 px-3 sm:px-4"
+          >
+            All
+          </Button>
           {CATEGORIES.map((c) => (
-            <Button key={c} variant={active === c ? "default" : "secondary"} onClick={() => setActive(c)}>
+            <Button
+              key={c}
+              variant={active === c ? "default" : "secondary"}
+              onClick={() => setActive(c)}
+              className="text-xs sm:text-sm py-1.5 sm:py-2 px-3 sm:px-4"
+            >
               {c}
             </Button>
           ))}
         </div>
       </div>
 
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <div className="grid gap-4 sm:gap-6 grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {filtered.map((p) => (
           <ProductCard key={p.id} product={p} />
         ))}
