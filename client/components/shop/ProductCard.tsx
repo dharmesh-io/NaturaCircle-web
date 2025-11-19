@@ -16,18 +16,18 @@ export const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
           </div>
         )}
       </div>
-      <div className="space-y-2 p-4">
+      <div className="space-y-2 p-3 sm:p-4">
         <div className="flex items-start justify-between gap-2">
-          <h4 className="font-medium leading-tight">{product.name}</h4>
-          <span className="font-semibold">₹{product.price.toFixed(2)}</span>
+          <h4 className="font-medium leading-tight text-xs sm:text-sm">{product.name}</h4>
+          <span className="font-semibold text-sm sm:text-base whitespace-nowrap">₹{product.price.toFixed(2)}</span>
         </div>
-        <p className="text-sm text-muted-foreground">{product.description}</p>
-        <div className="flex items-center gap-1 text-amber-500">
+        <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2">{product.description}</p>
+        <div className="flex items-center gap-0.5 text-amber-500">
           {Array.from({ length: 5 }).map((_, i) => (
-            <Star key={i} className={`h-4 w-4 ${i < product.rating ? "fill-current" : "opacity-30"}`} />
+            <Star key={i} className={`h-3 w-3 sm:h-4 sm:w-4 ${i < product.rating ? "fill-current" : "opacity-30"}`} />
           ))}
         </div>
-        <Button className="w-full" onClick={() => add(product)}>Add to cart</Button>
+        <Button className="w-full text-xs sm:text-sm py-2 sm:py-2.5" onClick={() => add(product)}>Add to cart</Button>
       </div>
     </div>
   );
