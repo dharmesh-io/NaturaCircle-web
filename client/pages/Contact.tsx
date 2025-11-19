@@ -19,23 +19,23 @@ export default function Contact() {
               <MapPin className="mt-0.5 h-5 w-5 text-primary" />
               <div>
                 <p className="font-semibold">NaturaCircle HQ</p>
-                <p className="text-sm text-muted-foreground">Prahlad Nagar, Ahmedabad, Gujarat 380015, India</p>
+                <p className="text-sm text-muted-foreground">18, Ompark Society, near Sub-division Office, Vatva, Ahmedabad</p>
               </div>
             </div>
             <div className="mt-4 flex items-center gap-3">
               <Mail className="h-5 w-5 text-primary" />
-              <a href="mailto:hello@naturacircle.com" className="text-sm">hello@naturacircle.com</a>
+              <a href="mailto:mcad240014@gmail.com" className="text-sm">mcad240014@gmail.com</a>
             </div>
             <div className="mt-3 flex items-center gap-3">
               <Phone className="h-5 w-5 text-primary" />
-              <a href="tel:+910000000000" className="text-sm">+91 00000 00000</a>
+              <a href="tel:+919510088267" className="text-sm">+91 95100 88267</a>
             </div>
             <div className="mt-3 flex items-center gap-3">
               <Instagram className="h-5 w-5 text-primary" />
               <a href="https://instagram.com/naturacircle" target="_blank" rel="noreferrer" className="text-sm">@naturacircle</a>
             </div>
             <div className="mt-4">
-              <a href="https://www.google.com/maps/dir/?api=1&destination=Prahlad+Nagar,+Ahmedabad,+Gujarat+380015,India" target="_blank" rel="noreferrer">
+              <a href="https://www.google.com/maps/dir/?api=1&destination=18,+Ompark+Society,+Vatva,+Ahmedabad" target="_blank" rel="noreferrer">
                 <button className="mt-2 inline-flex items-center gap-2 rounded-md bg-primary px-3 py-2 text-sm text-primary-foreground">Get directions</button>
               </a>
             </div>
@@ -43,8 +43,8 @@ export default function Contact() {
 
           <div className="overflow-hidden rounded-xl border">
             <iframe
-              title="Ahmedabad Map"
-              src="https://www.google.com/maps?q=Ahmedabad&output=embed"
+              title="NaturaCircle Location Map"
+              src="https://www.google.com/maps?q=18+Ompark+Society+Vatva+Ahmedabad&output=embed"
               className="h-64 w-full"
               loading="lazy"
             />
