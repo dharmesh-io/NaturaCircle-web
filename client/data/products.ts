@@ -28,7 +28,7 @@ export const PRODUCTS: Product[] = [
   {
     id: "btb-001",
     name: "Bamboo Toothbrush - Soft Bristles",
-    price: 3.99,
+    price: 798,
     image:
       "https://images.pexels.com/photos/4202894/pexels-photo-4202894.jpeg?auto=compress&cs=tinysrgb&w=1600",
     category: "Bamboo Toothbrushes",
@@ -40,7 +40,7 @@ export const PRODUCTS: Product[] = [
   {
     id: "btb-002",
     name: "Bamboo Toothbrush - Charcoal",
-    price: 4.5,
+    price: 900,
     image:
       "https://images.pexels.com/photos/7814562/pexels-photo-7814562.jpeg?auto=compress&cs=tinysrgb&w=1600",
     category: "Bamboo Toothbrushes",
@@ -51,7 +51,7 @@ export const PRODUCTS: Product[] = [
   {
     id: "btb-003",
     name: "Travel Bamboo Toothbrush + Case",
-    price: 7.9,
+    price: 1580,
     image:
       "https://images.pexels.com/photos/7814562/pexels-photo-7814562.jpeg?auto=compress&cs=tinysrgb&w=1600",
     category: "Bamboo Toothbrushes",
@@ -64,7 +64,7 @@ export const PRODUCTS: Product[] = [
   {
     id: "bot-201",
     name: "Stainless Reusable Bottle 750ml",
-    price: 21.5,
+    price: 4300,
     image:
       "https://images.pexels.com/photos/7880026/pexels-photo-7880026.jpeg?auto=compress&cs=tinysrgb&w=1600",
     category: "Reusable Bottles",
@@ -75,7 +75,7 @@ export const PRODUCTS: Product[] = [
   {
     id: "bot-202",
     name: "Sleek Thermos Flask 600ml",
-    price: 24.0,
+    price: 4800,
     image:
       "https://images.pexels.com/photos/30469934/pexels-photo-30469934.jpeg?auto=compress&cs=tinysrgb&w=1600",
     category: "Reusable Bottles",
@@ -86,7 +86,7 @@ export const PRODUCTS: Product[] = [
   {
     id: "bot-203",
     name: "Minimal Glass Bottle 500ml",
-    price: 15.9,
+    price: 3180,
     image:
       "https://images.pexels.com/photos/6858669/pexels-photo-6858669.jpeg?auto=compress&cs=tinysrgb&w=1600",
     category: "Reusable Bottles",
@@ -99,7 +99,7 @@ export const PRODUCTS: Product[] = [
   {
     id: "jbg-301",
     name: "Jute Tote Bag",
-    price: 9.5,
+    price: 1900,
     image:
       "https://images.pexels.com/photos/15601758/pexels-photo-15601758.jpeg?auto=compress&cs=tinysrgb&w=1600",
     category: "Jute Bags",
@@ -111,7 +111,7 @@ export const PRODUCTS: Product[] = [
   {
     id: "jbg-302",
     name: "Jute Lunch Carrier",
-    price: 12.0,
+    price: 2400,
     image:
       "https://images.pexels.com/photos/5094489/pexels-photo-5094489.jpeg?auto=compress&cs=tinysrgb&w=1600",
     category: "Jute Bags",
@@ -122,7 +122,7 @@ export const PRODUCTS: Product[] = [
   {
     id: "jbg-303",
     name: "Burlap Storage Pouch",
-    price: 6.9,
+    price: 1380,
     image:
       "https://images.pexels.com/photos/15601758/pexels-photo-15601758.jpeg?auto=compress&cs=tinysrgb&w=1600",
     category: "Jute Bags",
@@ -135,7 +135,7 @@ export const PRODUCTS: Product[] = [
   {
     id: "osk-401",
     name: "Organic Aloe Skincare Set",
-    price: 34.9,
+    price: 6980,
     image:
       "https://images.pexels.com/photos/8467963/pexels-photo-8467963.jpeg?auto=compress&cs=tinysrgb&w=1600",
     category: "Organic Skincare",
@@ -146,7 +146,7 @@ export const PRODUCTS: Product[] = [
   {
     id: "osk-402",
     name: "Aloe Vera Gel 200ml",
-    price: 10.9,
+    price: 2180,
     image:
       "https://images.pexels.com/photos/14798571/pexels-photo-14798571.jpeg?auto=compress&cs=tinysrgb&w=1600",
     category: "Organic Skincare",
@@ -157,7 +157,7 @@ export const PRODUCTS: Product[] = [
   {
     id: "osk-403",
     name: "Solid Shampoo Bar - Herbal",
-    price: 8.9,
+    price: 1780,
     image:
       "https://images.pexels.com/photos/7262414/pexels-photo-7262414.jpeg?auto=compress&cs=tinysrgb&w=1600",
     category: "Organic Skincare",
