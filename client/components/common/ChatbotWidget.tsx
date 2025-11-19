@@ -7,10 +7,10 @@ type Message = { from: "bot" | "user"; text: string };
 type InputMode = null | "name" | "email" | "orderId" | "message";
 
 const CONTACT = {
-  email: "hello@naturacircle.com",
-  phone: "+91 00000 00000",
+  email: "mcad240014@gmail.com",
+  phone: "+91 95100 88267",
   contactPage: "/contact",
-  whatsapp: "https://wa.me/910000000000",
+  whatsapp: "https://wa.me/919510088267",
 };
 
 const MAIN_MENU = [
