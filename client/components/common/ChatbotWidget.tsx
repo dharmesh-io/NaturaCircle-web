@@ -10,7 +10,7 @@ const CONTACT = {
   email: "mcad240014@gmail.com",
   phone: "+91 95100 88267",
   contactPage: "/contact",
-  whatsapp: "https://wa.me/919510088267",
+  instagram: "https://instagram.com/naturacircle",
 };
 
 const MAIN_MENU = [
@@ -344,9 +344,9 @@ export const ChatbotWidget: React.FC = () => {
                   </a>
                 </div>
                 <div className="mt-1">
-                  WhatsApp:{" "}
-                  <a className="text-primary underline" href={CONTACT.whatsapp} target="_blank" rel="noreferrer">
-                    Chat on WhatsApp
+                  Instagram:{" "}
+                  <a className="text-primary underline" href={CONTACT.instagram} target="_blank" rel="noreferrer">
+                    DM @naturacircle
                   </a>
                 </div>
               </div>
