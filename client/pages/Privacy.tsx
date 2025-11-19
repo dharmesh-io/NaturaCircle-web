@@ -33,7 +33,7 @@ export default function Privacy() {
         <h2 className="text-xl font-semibold">Your Choices</h2>
         <p className="mt-2 text-muted-foreground">
           You can access, update, or request deletion of your account data by
-          contacting us at hello@naturacircle.com. You can opt out of marketing
+          contacting us at mcad240014@gmail.com. You can opt out of marketing
           emails using the unsubscribe link in any marketing message.
         </p>
       </section>
