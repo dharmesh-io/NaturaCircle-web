@@ -4,6 +4,7 @@ import { useCart } from "@/components/cart/CartContext";
 import { PRODUCTS } from "@/data/products";
 
 type Message = { from: "bot" | "user"; text: string };
+type InputMode = null | "name" | "email" | "orderId" | "message";
 
 const CONTACT = {
   email: "hello@naturacircle.com",
@@ -13,18 +14,17 @@ const CONTACT = {
 };
 
 const MAIN_MENU = [
-  "Browse Products",
-  "Order Help",
-  "Shipping Info",
-  "Sustainability Tips",
-  "Customer Support",
+  "Shipping & Delivery",
+  "Product Categories",
+  "Returns & Refunds",
+  "Speak to a Human",
 ];
 
 const CATEGORIES = [
-  "Oral Care",
-  "Reusable Bottles & Flasks",
-  "Bags & Storage",
-  "Skincare & Haircare",
+  "Personal Care",
+  "Kitchen & Home",
+  "View All Products",
+  "Back to Main Menu",
 ];
 
 function findProductByName(name: string) {
@@ -36,9 +36,12 @@ export const ChatbotWidget: React.FC = () => {
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<Message[]>([
-    { from: "bot", text: "Hi there! 🌿 Welcome to Natura Circle — your eco-friendly store. How can I assist you today?" },
+    { from: "bot", text: "Hi there! Welcome to NaturaCircle. Sustainable Living Made Simple. 🌱 How can I help you today?" },
   ]);
   const [lastSuggestions, setLastSuggestions] = useState<string[] | null>(null);
+  const [inputMode, setInputMode] = useState<InputMode>(null);
+  const [unrecognizedCount, setUnrecognizedCount] = useState(0);
+  const [tempUserData, setTempUserData] = useState<{ name?: string; email?: string }>({});
   const listRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -57,7 +60,6 @@ export const ChatbotWidget: React.FC = () => {
     const product = findProductByName(name);
     if (!product) {
       pushBot("Sorry, I couldn't find that product. Try opening the Shop to add items.");
-      pushBot("Open Shop: /shop");
       return;
     }
     add(product, 1);
@@ -67,137 +69,190 @@ export const ChatbotWidget: React.FC = () => {
 
   const handleIntent = (payload: string) => {
     const p = payload.trim();
-    pushUser(p);
 
-    // direct product name match
-    const prod = findProductByName(p);
-    if (prod) {
-      setTimeout(() => {
-        pushBot(`We found ${prod.name}. Would you like to add it to your cart or view details?`);
-        pushBot("Options: Add to Cart | View Details | Return to Categories");
-        setLastSuggestions([prod.name]);
-      }, 300);
+    if (inputMode === "name") {
+      pushUser(p);
+      setTempUserData((prev) => ({ ...prev, name: p }));
+      setTimeout(() => pushBot("Great! Now, could you please share your email address?"), 300);
+      setInputMode("email");
       return;
     }
 
-    switch (p.toLowerCase()) {
-      case "browse products":
-        setTimeout(() => pushBot("Awesome! Which category are you interested in?"), 300);
+    if (inputMode === "email") {
+      pushUser(p);
+      setTempUserData((prev) => ({ ...prev, email: p }));
+      setTimeout(() => pushBot("Perfect! Our team will get back to you shortly. For immediate assistance, you can also reach us at hello@naturacircle.com or call +91 00000 00000."), 300);
+      setTimeout(() => pushBot("Options: Back to Main Menu | View Products"), 400);
+      setInputMode(null);
+      return;
+    }
+
+    if (inputMode === "orderId") {
+      pushUser(p);
+      setTimeout(() => pushBot(`You can track your order directly on our tracking page by entering your Order ID here: /track-order`), 300);
+      setTimeout(() => pushBot("Options: Back to Main Menu | Continue Shopping"), 400);
+      setInputMode(null);
+      return;
+    }
+
+    if (inputMode === "message") {
+      pushUser(p);
+      setTempUserData((prev) => ({ ...prev, message: p }));
+      setTimeout(() => pushBot("Thank you for your message. Our team is offline right now, but we'll get back to you within 24 hours at " + (tempUserData.email || "your email") + "."), 300);
+      setTimeout(() => pushBot("Options: Back to Main Menu | View Products"), 400);
+      setInputMode(null);
+      return;
+    }
+
+    pushUser(p);
+    const lowerP = p.toLowerCase();
+
+    // Check for specific product queries
+    const keywords = ["bamboo toothbrush", "toothbrush", "shampoo bar", "skincare", "bottle", "tote bag", "lunch carrier", "storage"];
+    const matchedKeyword = keywords.find((kw) => lowerP.includes(kw));
+    if (matchedKeyword) {
+      let productLink = "";
+      let category = "Personal Care";
+      if (matchedKeyword.includes("toothbrush")) {
+        productLink = "/shop#Bamboo%20Toothbrush";
+      } else if (matchedKeyword.includes("shampoo") || matchedKeyword.includes("skincare")) {
+        productLink = "/shop#Skincare";
+        category = "Personal Care";
+      } else if (matchedKeyword.includes("bottle")) {
+        productLink = "/shop#Bottles";
+        category = "Kitchen & Home";
+      } else if (matchedKeyword.includes("tote") || matchedKeyword.includes("lunch") || matchedKeyword.includes("storage")) {
+        productLink = "/shop#Bags";
+        category = "Kitchen & Home";
+      }
+      
+      const productName = p.charAt(0).toUpperCase() + p.slice(1);
+      setTimeout(() => pushBot(`Looking for ${productName}? Excellent choice for sustainable living! You can explore our range here: ${productLink}`), 300);
+      setTimeout(() => pushBot(`Options: View other ${category} | Back to Main Menu`), 400);
+      setUnrecognizedCount(0);
+      return;
+    }
+
+    switch (lowerP) {
+      case "shipping & delivery":
+        setTimeout(() => pushBot("We offer shipping across India. Standard delivery takes 5-7 business days. Shipping costs are calculated at checkout. Free shipping on orders over ₹999!"), 300);
+        setTimeout(() => pushBot("Options: Track My Order | Back to Main Menu"), 400);
+        setUnrecognizedCount(0);
+        break;
+
+      case "product categories":
+        setTimeout(() => pushBot("Great! What kind of eco-friendly products are you looking for?"), 300);
         setTimeout(() => pushBot(`Options: ${CATEGORIES.join(" | ")}`), 400);
+        setUnrecognizedCount(0);
+        break;
+
+      case "personal care":
+        setTimeout(() => pushBot("We offer eco-friendly personal care products including bamboo toothbrushes, shampoo bars, and skincare sets. Would you like to explore them?"), 300);
+        setTimeout(() => pushBot("Options: View Products | Back to Main Menu"), 400);
+        setLastSuggestions(["Bamboo Toothbrush", "Shampoo Bar", "Skincare"]);
+        setUnrecognizedCount(0);
+        break;
+
+      case "kitchen & home":
+        setTimeout(() => pushBot("Our Kitchen & Home collection includes reusable bottles, storage solutions, and eco-friendly kitchenware. What interests you?"), 300);
+        setTimeout(() => pushBot("Options: View Products | Back to Main Menu"), 400);
+        setLastSuggestions(["Bottles", "Storage", "Kitchenware"]);
+        setUnrecognizedCount(0);
+        break;
+
+      case "view all products":
+      case "view products":
+      case "shop":
+        setTimeout(() => pushBot("Opening our product catalog: /shop"), 300);
+        setUnrecognizedCount(0);
+        break;
+
+      case "back to main menu":
+      case "menu":
+        setTimeout(() => pushBot("Back to main menu. How can I help you?"), 300);
+        setTimeout(() => pushBot(`Options: ${MAIN_MENU.join(" | ")}`), 400);
         setLastSuggestions(null);
+        setUnrecognizedCount(0);
         break;
 
-      case "oral care":
-        setTimeout(() => pushBot("We offer Bamboo Toothbrushes with Soft Bristles, Charcoal variant, and Travel Bamboo Toothbrush with Case. Would you like to see more details or add any to your cart?"), 300);
-        setTimeout(() => pushBot("Options: View Details | Add to Cart | Return to Categories"), 400);
-        setLastSuggestions(["Bamboo Toothbrush - Soft Bristles", "Bamboo Toothbrush - Charcoal", "Travel Bamboo Toothbrush + Case"]);
+      case "returns & refunds":
+        setTimeout(() => pushBot("Our return policy allows returns within 7 days of delivery for unused products. Please visit our dedicated page for full details."), 300);
+        setTimeout(() => pushBot("Options: Need to Initiate a Return | Back to Main Menu"), 400);
+        setUnrecognizedCount(0);
         break;
 
-      case "reusable bottles & flasks":
-        setTimeout(() => pushBot("Choose from Stainless Reusable Bottle 750ml, Sleek Thermos Flask 600ml, or Minimal Glass Bottle 500ml. Interested in any?"), 300);
-        setTimeout(() => pushBot("Options: View Details | Add to Cart | Return to Categories"), 400);
-        setLastSuggestions(["Stainless Reusable Bottle 750ml", "Sleek Thermos Flask 600ml", "Minimal Glass Bottle 500ml"]);
+      case "need to initiate a return":
+        setTimeout(() => pushBot("To start a return, please contact us directly. You can reach our support team at hello@naturacircle.com or visit our contact page."), 300);
+        setTimeout(() => pushBot("Options: Go to Contact | Back to Main Menu"), 400);
+        setUnrecognizedCount(0);
         break;
 
-      case "bags & storage":
-        setTimeout(() => pushBot("We have eco-friendly Jute Tote Bag, Jute Lunch Carrier, and Burlap Storage Pouch. Want product info or pricing?"), 300);
-        setTimeout(() => pushBot("Options: View Details | Add to Cart | Return to Categories"), 400);
-        setLastSuggestions(["Jute Tote Bag", "Jute Lunch Carrier", "Burlap Storage Pouch"]);
+      case "go to contact":
+      case "contact":
+        setTimeout(() => pushBot("Opening contact page: /contact"), 300);
+        setUnrecognizedCount(0);
         break;
 
-      case "skincare & haircare":
-        setTimeout(() => pushBot("Check out our Organic Aloe Skincare Set, Aloe Vera Gel 200ml, and Solid Shampoo Bar - Herbal. Would you like to explore them?"), 300);
-        setTimeout(() => pushBot("Options: View Details | Add to Cart | Return to Categories"), 400);
-        setLastSuggestions(["Organic Aloe Skincare Set", "Aloe Vera Gel 200ml", "Solid Shampoo Bar - Herbal"]);
+      case "speak to a human":
+      case "help":
+      case "agent":
+      case "talk to someone":
+      case "customer service":
+        setTimeout(() => pushBot("Connecting you to our team now. Please provide your name and email so we can assist you better."), 300);
+        setTimeout(() => pushBot("What's your name?"), 400);
+        setInputMode("name");
+        setUnrecognizedCount(0);
         break;
 
-      case "view details":
-        if (lastSuggestions && lastSuggestions.length > 0) {
-          pushBot(`Open the product page for more details: ${lastSuggestions.map((n) => `${n} -> /shop`).join(' | ')}`);
-          pushBot("Or type the exact product name to add it to your cart.");
-        } else {
-          pushBot("Which product would you like details for? Type the product name or pick a category first.");
-        }
+      case "track my order":
+      case "where is my order":
+      case "order status":
+        setTimeout(() => pushBot("To track your order, please provide your Order ID. You can find it in your confirmation email."), 300);
+        setTimeout(() => pushBot("Please enter your Order ID:"), 400);
+        setInputMode("orderId");
+        setUnrecognizedCount(0);
         break;
 
-      case "add to cart":
-        if (lastSuggestions && lastSuggestions.length === 1) handleAddToCart(lastSuggestions[0]);
-        else if (lastSuggestions && lastSuggestions.length > 1) pushBot(`Which of these would you like to add? ${lastSuggestions.join(' | ')}`);
-        else pushBot("Please tell me the product name or browse categories to add items.");
+      case "promotions":
+      case "offers":
+      case "discount":
+      case "sale":
+      case "deals":
+        setTimeout(() => pushBot("Yes! We often have exciting offers on our eco-friendly range. Check out our 'Deals' page or sign up for our newsletter to stay updated on special promotions!"), 300);
+        setTimeout(() => pushBot("Options: View Current Deals | Sign Up for Newsletter | Back to Main Menu"), 400);
+        setUnrecognizedCount(0);
         break;
 
-      case "return to categories":
-        pushBot("Returning to categories...");
-        setTimeout(() => pushBot(`Options: ${CATEGORIES.join(" | ")}`), 200);
-        setLastSuggestions(null);
+      case "view current deals":
+        setTimeout(() => pushBot("Opening deals page: /deals"), 300);
+        setUnrecognizedCount(0);
         break;
 
-      case "order help":
-        pushBot("You can order online or via WhatsApp. Would you like the online shop link or our WhatsApp number?");
-        pushBot("Options: Online Order Link | WhatsApp Number | Return to Main Menu");
+      case "sign up for newsletter":
+        setTimeout(() => pushBot("Great! Drop your email below, and we'll send you updates on new products, exclusive offers, and sustainable living tips."), 300);
+        setTimeout(() => pushBot("Please enter your email address:"), 400);
+        setInputMode("email");
+        setUnrecognizedCount(0);
         break;
 
-      case "online order link":
-        pushBot("Here’s the online order page: /shop");
-        break;
-
-      case "whatsapp number":
-        pushBot(`Chat with us on WhatsApp: ${CONTACT.whatsapp}`);
-        break;
-
-      case "shipping info":
-        pushBot("We offer eco-friendly packaging and deliver within Ahmedabad. Shipping fees apply for orders below ₹500.");
-        pushBot("Options: More Details | Return to Main Menu");
-        break;
-
-      case "more details":
-        pushBot("Local delivery: 1-2 days. Standard: 3-7 days. Free delivery for orders above ₹500.");
-        break;
-
-      case "sustainability tips":
-        pushBot("Here’s a tip: Use bamboo toothbrushes to reduce plastic waste! Want more eco tips or product suggestions?");
-        pushBot("Options: More Tips | Product Suggestions | Return to Main Menu");
-        break;
-
-      case "product suggestions":
-        pushBot("Based on your interest, I recommend: Bamboo Toothbrush - Charcoal, Stainless Reusable Bottle 750ml, and Organic Aloe Skincare Set. Want to add any to your cart?");
-        pushBot("Options: Add to Cart | More Suggestions | Return to Main Menu");
-        setLastSuggestions(["Bamboo Toothbrush - Charcoal", "Stainless Reusable Bottle 750ml", "Organic Aloe Skincare Set"]);
-        break;
-
-      case "more suggestions":
-        pushBot("Try: Jute Tote Bag, Minimal Glass Bottle 500ml, Solid Shampoo Bar - Herbal.");
-        setLastSuggestions(["Jute Tote Bag", "Minimal Glass Bottle 500ml", "Solid Shampoo Bar - Herbal"]);
-        break;
-
+      case "continue shopping":
       case "proceed to checkout":
-        pushBot("You can complete your purchase here: /checkout");
-        pushBot("Options: Payment Info | Return to Main Menu");
-        break;
-
-      case "payment info":
-        pushBot("We accept all major credit/debit cards and digital wallets like Paytm and Google Pay.");
-        pushBot("Options: Place Order | Return to Main Menu");
-        break;
-
-      case "customer support":
-      case "contact support":
-        pushBot(`Reach us at ${CONTACT.phone} or WhatsApp ${CONTACT.whatsapp}. Would you like me to connect you now?`);
-        pushBot("Options: Connect Now | Return to Main Menu");
-        break;
-
-      case "connect now":
-        pushBot(`Opening contact page: ${CONTACT.contactPage}`);
-        break;
-
-      case "thank you":
-      case "end chat":
-        pushBot("Thanks for visiting Natura Circle! If you need anything else, just ask. Have a great day! 🌿");
+        setTimeout(() => pushBot("You can complete your purchase here: /checkout"), 300);
+        setUnrecognizedCount(0);
         break;
 
       default:
-        pushBot("Sorry, I didn’t catch that. Can I help you browse products, answer questions, or connect you with support?");
-        pushBot("Options: Browse Products | Order Help | Contact Support");
+        setUnrecognizedCount((c) => c + 1);
+        if (unrecognizedCount < 1) {
+          pushBot("I'm sorry, I didn't quite understand that. Could you please rephrase your question, or choose from the options below?");
+          setTimeout(() => pushBot(`Options: Back to Main Menu | Speak to a Human`), 300);
+        } else {
+          pushBot("It seems like I'm having trouble understanding. Let me connect you with our team.");
+          setTimeout(() => pushBot("Connecting you to our team. Please provide your name and email so we can assist you better."), 300);
+          setTimeout(() => pushBot("What's your name?"), 400);
+          setInputMode("name");
+          setUnrecognizedCount(0);
+        }
         break;
     }
   };
@@ -235,20 +290,41 @@ export const ChatbotWidget: React.FC = () => {
             </div>
 
             <div className="p-3">
-              <div className="mb-2 flex flex-wrap gap-2">
-                {MAIN_MENU.map((s) => (
-                  <button key={s} onClick={() => handleIntent(s)} className="rounded-full border px-3 py-1 text-xs hover:bg-muted">
-                    {s}
-                  </button>
-                ))}
-              </div>
+              {inputMode && (
+                <div className="mb-2 text-xs text-muted-foreground">
+                  {inputMode === "name" && "Please type your name"}
+                  {inputMode === "email" && "Please type your email"}
+                  {inputMode === "orderId" && "Please type your Order ID"}
+                  {inputMode === "message" && "Please type your message"}
+                </div>
+              )}
+
+              {!inputMode && MAIN_MENU.length > 0 && (
+                <div className="mb-2 flex flex-wrap gap-2">
+                  {MAIN_MENU.map((s) => (
+                    <button key={s} onClick={() => handleIntent(s)} className="rounded-full border px-3 py-1 text-xs hover:bg-muted">
+                      {s}
+                    </button>
+                  ))}
+                </div>
+              )}
 
               <div className="flex gap-2">
                 <input
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={handleKey}
-                  placeholder="Type a question or choose an option..."
+                  placeholder={
+                    inputMode
+                      ? inputMode === "name"
+                        ? "Your name..."
+                        : inputMode === "email"
+                          ? "Your email..."
+                          : inputMode === "orderId"
+                            ? "Your Order ID..."
+                            : "Your message..."
+                      : "Type a question or choose an option..."
+                  }
                   className="flex-1 rounded-md border px-3 py-2 text-sm"
                 />
                 <button onClick={() => handleSend(input)} aria-label="Send message" className="inline-flex items-center rounded-md bg-primary px-3 text-primary-foreground">
@@ -257,16 +333,33 @@ export const ChatbotWidget: React.FC = () => {
               </div>
 
               <div className="mt-3 text-xs text-muted-foreground">
-                <div>Contact: <a className="text-primary underline" href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a> · <a className="text-primary underline" href={`tel:${CONTACT.phone}`}>{CONTACT.phone}</a></div>
-                <div className="mt-1">WhatsApp: <a className="text-primary underline" href={CONTACT.whatsapp} target="_blank" rel="noreferrer">Chat on WhatsApp</a></div>
-                <div className="mt-1">For press or partnerships, <a className="text-primary underline" href={CONTACT.contactPage}>visit our contact page</a>.</div>
+                <div>
+                  Contact:{" "}
+                  <a className="text-primary underline" href={`mailto:${CONTACT.email}`}>
+                    {CONTACT.email}
+                  </a>{" "}
+                  ·{" "}
+                  <a className="text-primary underline" href={`tel:${CONTACT.phone}`}>
+                    {CONTACT.phone}
+                  </a>
+                </div>
+                <div className="mt-1">
+                  WhatsApp:{" "}
+                  <a className="text-primary underline" href={CONTACT.whatsapp} target="_blank" rel="noreferrer">
+                    Chat on WhatsApp
+                  </a>
+                </div>
               </div>
             </div>
           </div>
         </div>
       )}
 
-      <button onClick={() => setOpen((o) => !o)} className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition hover:scale-105" aria-label="Open chatbot">
+      <button
+        onClick={() => setOpen((o) => !o)}
+        className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition hover:scale-105"
+        aria-label="Open chatbot"
+      >
         <MessageCircle className="h-6 w-6" />
       </button>
     </div>
