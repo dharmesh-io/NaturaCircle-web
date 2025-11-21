@@ -18,7 +18,7 @@ export default function Contact() {
             <div className="flex items-start gap-3">
               <MapPin className="mt-0.5 h-5 w-5 text-primary" />
               <div>
-                <p className="font-semibold">NaturaCircle : Eco-Friendly Products</p>
+                <p className="font-semibold">NaturaCircle HQ</p>
                 <p className="text-sm text-muted-foreground">18, Ompark Society, near Sub-division Office, Vatva, Ahmedabad</p>
               </div>
             </div>
